@@ -7,7 +7,7 @@ import Image from 'next/image'
 import { useRouter } from "next/navigation";
 
 interface BarbershopInfoProps {
-    barbershop: Barbershop;
+    barbershop: Barbershop
 }
 const BarbershopInfo = ({barbershop}: BarbershopInfoProps) => {
 
