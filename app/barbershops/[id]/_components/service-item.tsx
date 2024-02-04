@@ -13,6 +13,7 @@ import { generateDayTimeList } from "../_helpers/hours";
 import { format } from "date-fns/format";
 import { saveBooking } from "../_actions/save-booking";
 import { setHours, setMinutes } from "date-fns";
+import { Loader2 } from "lucide-react";
 
 interface ServiceItemProps {
     barbershop: Barbershop;
@@ -26,6 +27,8 @@ const ServiceItem = ({service, barbershop, isAuthenticated} : ServiceItemProps) 
 
     const [date, setDate] = useState<Date | undefined>(undefined)
     const [hour, setHour] = useState<string | undefined>()
+    const [submitIsLoading, setSubmitIsLoading] = useState(false);
+
 
     const handleDateClick = (date: Date | undefined) => {
         setDate(date);
@@ -42,6 +45,9 @@ const ServiceItem = ({service, barbershop, isAuthenticated} : ServiceItemProps) 
     };
 
     const handleBookingSubmit = async () => {
+
+        setSubmitIsLoading(true);
+        
         try {
             if(!hour || !date || !data?.user){
                 return
@@ -58,8 +64,12 @@ const ServiceItem = ({service, barbershop, isAuthenticated} : ServiceItemProps) 
             });
         } catch (error) {
             console.log(error)
+        }finally{
+            setSubmitIsLoading(false);
         }
     }
+
+
     const timeList = useMemo(()=>{
         return date ? generateDayTimeList(date) : [];
     }, [date]);
@@ -188,7 +198,9 @@ const ServiceItem = ({service, barbershop, isAuthenticated} : ServiceItemProps) 
                                             </Card>
                                         </div>
                                         <SheetFooter className="px-5">
-                                            <Button onClick={handleBookingSubmit} disabled={!hour || !date}>Confirmar Reserva</Button>
+                                            <Button onClick={handleBookingSubmit} disabled={(!hour || !date) || submitIsLoading}>
+                                                {submitIsLoading &&  <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                                Confirmar Reserva</Button>
                                         </SheetFooter>
                                     </SheetContent>
                                 </Sheet>
