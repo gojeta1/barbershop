@@ -3,9 +3,9 @@ import Header from "../_components/header";
 import { redirect } from "next/navigation";
 
 import BookingItem from "../_components/booking-item";
-import { authOptions } from "../api/auth/[...nextauth]/route";
 import { db } from "../_lib/ prisma";
 import { Key } from "react";
+import { authOptions } from "../_lib/auth";
 
 
 const BookingsPage = async () => {
