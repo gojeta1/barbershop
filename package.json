@@ -7,11 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prepare": "prisma generate && prisma db push",
+    "prepare": "prisma generate && prisma db push && ts-node prisma/seed.ts",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
-    "dev:db": "docker-compose up -d && next dev",
-    "postinstall": "ts-node prisma/seed.ts"
+    "dev:db": "docker-compose up -d && next dev"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
