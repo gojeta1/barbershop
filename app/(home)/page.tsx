@@ -1,3 +1,5 @@
+"use client";
+
 import { format } from "date-fns";
 import Header from "../_components/header";
 import { ptBR } from "date-fns/locale";
