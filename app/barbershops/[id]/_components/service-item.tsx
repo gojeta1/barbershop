@@ -159,7 +159,7 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
                 </SheetTrigger>
 
                 <SheetContent className="p-0">
-                  <SheetHeader className="text-left px-5 py-6 border-b border-solid border-secondary">
+                  <SheetHeader className="text-left px-5 py-6 border-b border-solid border-secondary h-screen overflow-y-auto">
                     <SheetTitle>Fazer Reserva</SheetTitle>
                   </SheetHeader>
 
