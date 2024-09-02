@@ -11,27 +11,27 @@ import { authOptions } from "../_lib/auth";
 export default async function Home() {
   const session = await getServerSession(authOptions);
 
-  const [barbershops, recommendedBarbershops] = await Promise.all([
+  const [barbershops, recommendedBarbershops, confirmedBookings] = await Promise.all([
     db.barbershop.findMany({}).catch(() => []),
     db.barbershop.findMany({
       orderBy: {
         id: "asc",
       },
     }).catch(() => []),
-    // session?.user
-    //   ? db.booking.findMany({
-    //       where: {
-    //         userId: (session.user as any).id,
-    //         date: {
-    //           gte: new Date(),
-    //         },
-    //       },
-    //       include: {
-    //         service: true,
-    //         barbershop: true,
-    //       },
-    //     }).catch(() => [])
-    //   : Promise.resolve([]),
+    session?.user
+      ? db.booking.findMany({
+          where: {
+            userId: (session.user as any).id,
+            date: {
+              gte: new Date(),
+            },
+          },
+          include: {
+            service: true,
+            barbershop: true,
+          },
+        }).catch(() => [])
+      : Promise.resolve([]),
   ]);
 
   return (
@@ -53,8 +53,8 @@ export default async function Home() {
         <Search />
       </div>
 
-      {/* <div className="mt-6">
-        {confirmedBookings.length > 0 && (
+      <div className="mt-6">
+        {confirmedBookings.length > 0 ? (
           <>
             <h2 className="pl-5 text-xs mb-3 uppercase text-gray-400 font-bold">Agendamentos</h2>
             <div className="px-5 flex gap-3 overflow-x-auto [&::-webkit-scrollbar]:hidden">
@@ -63,8 +63,12 @@ export default async function Home() {
               ))}
             </div>
           </>
+        ) : (
+          <div className="px-5">
+            <p className="text-gray-400 text-sm">Você não possui agendamentos.</p>
+          </div>
         )}
-      </div> */}
+      </div>
 
       <div className="mt-6">
         <h2 className="px-5 text-xs mb-3 uppercase text-gray-400 font-bold">Recomendados</h2>
