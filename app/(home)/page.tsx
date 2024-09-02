@@ -65,7 +65,7 @@ export default async function Home() {
           </>
         ) : (
           <div className="px-5">
-            <p className="text-gray-400 text-sm">Você não possui agendamentos.</p>
+            <p className="text-gray-200 text-sm">Você não possui agendamentos.</p>
           </div>
         )}
       </div>
