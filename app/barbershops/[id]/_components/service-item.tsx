@@ -76,13 +76,14 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
 
       const newDate = setMinutes(setHours(date, dateHour), dateMinutes);
 
-      await saveBooking({
+      const response = await saveBooking({
         serviceId: service.id,
         barbershopId: barbershop.id,
         date: newDate,
         userId: (data.user as any).id,
       });
 
+      console.log(response);
       setSheetIsOpen(false);
       setHour(undefined);
       setDate(undefined);
