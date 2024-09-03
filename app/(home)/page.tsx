@@ -25,10 +25,14 @@ export default async function Home() {
             date: {
               gte: new Date(),
             },
+            status: 'CONFIRMED',
           },
           include: {
             service: true,
             barbershop: true,
+          },
+          orderBy: {
+            date: 'asc',
           },
         }).catch(() => [])
       : Promise.resolve([]),

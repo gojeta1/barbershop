@@ -17,6 +17,7 @@ export const saveBooking = async (params: SaveBookingParams) => {
       userId: params.userId,
       date: params.date,
       barbershopId: params.barbershopId,
+      status: 'CONFIRMED',
     },
   });
 

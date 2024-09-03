@@ -12,29 +12,50 @@ const BookingsPage = async () => {
     return redirect("/");
   }
 
-  const [confirmedBookings, finishedBookings] = await Promise.all([
+  const [confirmedBookings, finishedBookings, canceledBookings] = await Promise.all([
     db.booking.findMany({
       where: {
         userId: (session.user as any).id,
-        date: {
-          gte: new Date(),
-        },
+        // date: {
+        //   gte: new Date(),
+        // },
+        status: 'CONFIRMED',
       },
       include: {
         service: true,
         barbershop: true,
+      },
+      orderBy: {
+        date: 'asc',
       },
     }),
     db.booking.findMany({
       where: {
         userId: (session.user as any).id,
-        date: {
-          lt: new Date(),
-        },
+        // date: {
+        //   lt: new Date(),
+        // },
+        status: 'FINISHED',
       },
       include: {
         service: true,
         barbershop: true,
+      },
+      orderBy: {
+        date: 'desc',
+      },
+    }),
+    db.booking.findMany({
+      where: {
+        userId: (session.user as any).id,
+        status: 'CANCELED',
+      },
+      include: {
+        service: true,
+        barbershop: true,
+      },
+      orderBy: {
+        date: 'desc',
       },
     }),
   ]);
@@ -52,7 +73,7 @@ const BookingsPage = async () => {
 
             <div className="flex flex-col gap-3">
               {confirmedBookings.map((booking) => (
-                <BookingItem key={booking.id} booking={booking} />
+                <BookingItem key={booking.id} booking={booking as any} />
               ))}
             </div>
           </>
@@ -64,11 +85,23 @@ const BookingsPage = async () => {
 
             <div className="flex flex-col gap-3">
               {finishedBookings.map((booking) => (
-                <BookingItem key={booking.id} booking={booking} />
+                <BookingItem key={booking.id} booking={booking as any} />
               ))}
             </div>
           </>
         )}
+
+        {canceledBookings.length > 0 && (
+          <>
+            <h2 className="text-gray-400 uppercase font-bold text-sm mt-6 mb-3">Cancelados</h2>
+
+            <div className="flex flex-col gap-3">
+              {canceledBookings.map((booking) => (
+                <BookingItem key={booking.id} booking={booking as any} />
+              ))}
+            </div>
+          </>
+        )}  
       </div>
     </>
   );

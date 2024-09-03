@@ -25,6 +25,7 @@ import {
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
 import BookingInfo from "./booking-info";
+import { finishBooking } from "../_actions/finish-booking";
 
 interface BookingItemProps {
   booking: Prisma.BookingGetPayload<{
@@ -36,21 +37,35 @@ interface BookingItemProps {
 }
 
 const BookingItem = ({ booking }: BookingItemProps) => {
-  const [isDeleteLoading, setIsDeleteLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const isBookingConfirmed = isFuture(booking.date);
+  const isBookingConfirmed = booking.status === "CONFIRMED";
+  const isBookingCanceled = booking.status === "CANCELED";
+  const isBookingFinished = booking.status === "FINISHED";
 
   const handleCancelClick = async () => {
-    setIsDeleteLoading(true);
-
+    setIsLoading(true);
     try {
       await cancelBooking(booking.id);
-
       toast.success("Reserva cancelada com sucesso!");
     } catch (error) {
       console.error(error);
+      toast.error("Erro ao cancelar a reserva. Por favor, tente novamente.");
     } finally {
-      setIsDeleteLoading(false);
+      setIsLoading(false);
+    }
+  };
+
+  const handleFinishClick = async () => {
+    setIsLoading(true);
+    try {
+      await finishBooking(booking.id);
+      toast.success("Reserva finalizada com sucesso!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao finalizar a reserva. Por favor, tente novamente.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -60,18 +75,29 @@ const BookingItem = ({ booking }: BookingItemProps) => {
         <Card className="min-w-full">
           <CardContent className="py-0 flex px-0">
             <div className="flex flex-col gap-2 py-5 flex-[3] pl-5">
-              <Badge variant={isBookingConfirmed ? "default" : "secondary"} className="w-fit">
-                {isBookingConfirmed ? "Confirmado" : "Finalizado"}
+              <Badge 
+                variant={
+                  isBookingConfirmed ? "default" : 
+                  isBookingCanceled ? "destructive" : 
+                  isBookingFinished ? "secondary" : 
+                  'secondary'
+                } 
+                className="w-fit my-3"
+              >
+                {
+                  isBookingConfirmed ? "Confirmado" : 
+                  isBookingCanceled ? "Cancelado" : 
+                  isBookingFinished ? "Finalizado" : 
+                  "Pendente"
+                }
               </Badge>
               <h2 className="font-bold">{booking.service.name}</h2>
 
               <div className="flex items-center gap-2">
                 <Avatar className="h-6 w-6">
                   <AvatarImage src={booking.barbershop.imageUrl} />
-
                   <AvatarFallback>A</AvatarFallback>
                 </Avatar>
-
                 <h3 className="text-sm">{booking.barbershop.name}</h3>
               </div>
             </div>
@@ -83,7 +109,7 @@ const BookingItem = ({ booking }: BookingItemProps) => {
                 })}
               </p>
               <p className="text-2xl">{format(booking.date, "dd")}</p>
-              <p className="text-sm">{format(booking.date, "hh:mm")}</p>
+              <p className="text-sm">{format(booking.date, "HH:mm")}</p>
             </div>
           </CardContent>
         </Card>
@@ -114,41 +140,62 @@ const BookingItem = ({ booking }: BookingItemProps) => {
             </div>
           </div>
 
-          <Badge variant={isBookingConfirmed ? "default" : "secondary"} className="w-fit my-3">
-            {isBookingConfirmed ? "Confirmado" : "Finalizado"}
+          <Badge 
+            variant={
+              isBookingConfirmed ? "default" : 
+              isBookingCanceled ? "destructive" : 
+              isBookingFinished ? "secondary" : 
+              "default"
+            } 
+            className="w-fit my-3"
+          >
+            {
+              isBookingConfirmed ? "Confirmado" : 
+              isBookingCanceled ? "Cancelado" : 
+              isBookingFinished ? "Finalizado" : 
+              "Confirmado"
+            }
           </Badge>
 
           <BookingInfo booking={booking} />
 
           <SheetFooter className="flex-row gap-3 mt-6">
-            <SheetClose asChild>
+            {/* <SheetClose asChild>
               <Button className="w-full" variant="secondary">
                 Voltar
               </Button>
-            </SheetClose>
+            </SheetClose> */}
 
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button disabled={!isBookingConfirmed || isDeleteLoading} className="w-full" variant="destructive">
-                  Cancelar Reserva
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent className="w-[90%]">
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Deseja mesmo cancelar essa reserva?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Uma vez cancelada, não será possível reverter essa ação.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter className="flex-row gap-3">
-                  <AlertDialogCancel className="w-full mt-0">Voltar</AlertDialogCancel>
-                  <AlertDialogAction disabled={isDeleteLoading} className="w-full" onClick={handleCancelClick}>
-                    {isDeleteLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Confirmar
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            {isBookingConfirmed && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button disabled={isLoading} className="w-full" variant="destructive">
+                    Cancelar Reserva
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="w-[90%]">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Deseja mesmo cancelar essa reserva?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Uma vez cancelada, não será possível reverter essa ação.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter className="flex-row gap-3">
+                    <AlertDialogCancel className="w-full mt-0">Voltar</AlertDialogCancel>
+                    <AlertDialogAction disabled={isLoading} className="w-full" onClick={handleCancelClick}>
+                      {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      Confirmar
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
+
+            {isBookingConfirmed && (
+              <Button disabled={isLoading} className="w-full" variant="default" onClick={handleFinishClick}>
+                Finalizar Reserva
+              </Button>
+            )}
           </SheetFooter>
         </div>
       </SheetContent>
