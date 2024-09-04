@@ -9,8 +9,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../_lib/auth";
 
 export default async function Home() {
-  const session = await getServerSession(authOptions);
-
+  // const session = await getServerSession(authOptions);
   const [barbershops, recommendedBarbershops, confirmedBookings] = await Promise.all([
     db.barbershop.findMany({}).catch(() => []),
     db.barbershop.findMany({
@@ -18,24 +17,39 @@ export default async function Home() {
         id: "asc",
       },
     }).catch(() => []),
-    session?.user
-      ? db.booking.findMany({
-          where: {
-            userId: (session.user as any).id,
-            date: {
-              gte: new Date(),
-            },
-            status: 'CONFIRMED',
-          },
-          include: {
-            service: true,
-            barbershop: true,
-          },
-          orderBy: {
-            date: 'asc',
-          },
-        }).catch(() => [])
-      : Promise.resolve([]),
+    // session?.user
+    // ? db.booking.findMany({
+    //     where: {
+    //       userId: (session.user as any).id,
+    //       date: {
+    //         gte: new Date(),
+    //       },
+    //       status: 'CONFIRMED',
+    //     },
+    //     include: {
+    //       service: true,
+    //       barbershop: true,
+    //     },
+    //     orderBy: {
+    //       date: 'asc',
+    //     },
+    //   }).catch(() => [])
+    // : Promise.resolve([]),
+    db.booking.findMany({
+      where: {
+        date: {
+          gte: new Date(),
+        },
+        status: 'CONFIRMED',
+      },
+      include: {
+        service: true,
+        barbershop: true,
+      },
+      orderBy: {
+        date: 'asc',
+      },
+    }).catch(() => []),
   ]);
 
   return (
@@ -44,7 +58,8 @@ export default async function Home() {
 
       <div className="px-5 pt-5">
         <h2 className="text-xl font-bold">
-          {session?.user ? `Olá, ${session.user.name?.split(" ")[0] || ""}!` : "Olá! Vamos agendar um corte hoje?"}
+          {/* {session?.user ? `Olá, ${session.user.name?.split(" ")[0] || ""}!` : "Olá! Vamos agendar um corte hoje?"} */}
+          Olá! Vamos agendar um corte hoje?
         </h2>
         <p className="capitalize text-sm">
           {format(new Date(), "EEEE',' dd 'de' MMMM", {
