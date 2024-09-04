@@ -80,8 +80,6 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
 
   const handleBookingSubmit = async () => {
     setSubmitIsLoading(true);
-    console.log(userId);
-
     try {
       if (!hour || !date || !userId) {
         return;
