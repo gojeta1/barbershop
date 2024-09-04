@@ -33,19 +33,6 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
   const [hour, setHour] = useState<string | undefined>();
   const [submitIsLoading, setSubmitIsLoading] = useState(false);
   const [sheetIsOpen, setSheetIsOpen] = useState(false);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('open') === 'true' && !sheetIsOpen) {
-        setSheetIsOpen(true);
-        // Remove the 'open' parameter from the URL
-        params.delete('open');
-        const newUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`;
-        window.history.replaceState({}, '', newUrl);
-      }
-    }
-  }, [sheetIsOpen]);
   const [dayBookings, setDayBookings] = useState<Booking[]>([]);
 
   useEffect(() => {
