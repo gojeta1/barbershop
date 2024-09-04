@@ -35,12 +35,17 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
   const [sheetIsOpen, setSheetIsOpen] = useState(false);
   const [dayBookings, setDayBookings] = useState<Booking[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
+  const [barbershopId, setBarbershopId] = useState<string | null>(null);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const userIdParam = searchParams.get('userId');
+    const barbershopIdParam = searchParams.get('barbershopId');
     if (userIdParam) {
       setUserId(userIdParam);
+    }
+    if (barbershopIdParam) {
+      setBarbershopId(barbershopIdParam);
     }
   }, []);
 
@@ -48,14 +53,15 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
     if (!date) {
       return;
     }
-
     const refreshAvailableHours = async () => {
-      const _dayBookings = await getDayBookings(barbershop.id, date);
-      setDayBookings(_dayBookings);
+      if (barbershopId && date) {
+        const _dayBookings = await getDayBookings(barbershopId, date);
+        setDayBookings(_dayBookings);
+      }
     };
 
     refreshAvailableHours();
-  }, [date, barbershop.id]);
+  }, [date, barbershopId]);
 
   const handleDateClick = (date: Date | undefined) => {
     setDate(date);
