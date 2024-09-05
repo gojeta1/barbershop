@@ -215,7 +215,14 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
                   {/* Mostrar lista de horários apenas se alguma data estiver selecionada */}
                   {date && (
                     <div className="flex gap-3 overflow-x-auto py-6 px-5 border-t border-solid border-secondary [&::-webkit-scrollbar]:hidden">
-                      {timeList.map((time) => (
+                      {timeList.filter(time => {
+                        const [hour, minute] = time.split(':');
+                        const dateTime = setMinutes(setHours(date, parseInt(hour)), parseInt(minute));
+                        return !dayBookings.some(booking => 
+                          booking.date.getTime() === dateTime.getTime() &&
+                          booking.serviceId === service.id
+                        );
+                      }).map((time) => (
                         <Button
                           onClick={() => handleHourClick(time)}
                           variant={hour === time ? "default" : "outline"}
