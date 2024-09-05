@@ -1,3 +1,4 @@
+"use client";
 import { getServerSession } from "next-auth";
 import Header from "../_components/header";
 import { redirect } from "next/navigation";
