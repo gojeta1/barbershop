@@ -47,21 +47,22 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
     if (barbershopIdParam) {
       setBarbershopId(barbershopIdParam);
     }
-  }, []);
-
-  useEffect(() => {
     if (!date) {
       return;
     }
     const refreshAvailableHours = async () => {
-      if (barbershopId && date) {
-        const _dayBookings = await getDayBookings(barbershopId, date);
+      if (barbershopIdParam && date) {
+        const _dayBookings = await getDayBookings(barbershopIdParam, date);
         setDayBookings(_dayBookings);
       }
     };
 
     refreshAvailableHours();
   }, [date, barbershopId]);
+
+  // useEffect(() => {
+
+  // }, [date, barbershopId]);
 
   const handleDateClick = (date: Date | undefined) => {
     setDate(date);
