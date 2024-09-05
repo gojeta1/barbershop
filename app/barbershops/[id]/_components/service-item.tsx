@@ -38,31 +38,18 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
   const [barbershopId, setBarbershopId] = useState<string | null>(null);
 
   useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const userIdParam = searchParams.get('userId');
-    const barbershopIdParam = searchParams.get('barbershopId');
-    if (userIdParam) {
-      setUserId(userIdParam);
-    }
-    if (barbershopIdParam) {
-      setBarbershopId(barbershopIdParam);
-    }
     if (!date) {
       return;
     }
     const refreshAvailableHours = async () => {
-      if (barbershopIdParam && date) {
-        const _dayBookings = await getDayBookings(barbershopIdParam, date);
+      if (barbershopId && date) {
+        const _dayBookings = await getDayBookings(barbershopId, date);
         setDayBookings(_dayBookings);
       }
     };
 
     refreshAvailableHours();
   }, [date, barbershopId]);
-
-  // useEffect(() => {
-
-  // }, [date, barbershopId]);
 
   const handleDateClick = (date: Date | undefined) => {
     setDate(date);
@@ -74,9 +61,9 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
   };
 
   const handleBookingClick = () => {
-    // if (!isAuthenticated) {
-    //   return signIn("google");
-    // }
+    if (!isAuthenticated) {
+      return signIn("google");
+    }
   };
 
   const handleBookingSubmit = async () => {
@@ -215,14 +202,7 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
                   {/* Mostrar lista de horários apenas se alguma data estiver selecionada */}
                   {date && (
                     <div className="flex gap-3 overflow-x-auto py-6 px-5 border-t border-solid border-secondary [&::-webkit-scrollbar]:hidden">
-                      {timeList.filter(time => {
-                        const [hour, minute] = time.split(':');
-                        const dateTime = setMinutes(setHours(date, parseInt(hour)), parseInt(minute));
-                        return !dayBookings.some(booking => 
-                          booking.date.getTime() === dateTime.getTime() &&
-                          booking.serviceId === service.id
-                        );
-                      }).map((time) => (
+                      {timeList.map((time) => (
                         <Button
                           onClick={() => handleHourClick(time)}
                           variant={hour === time ? "default" : "outline"}
