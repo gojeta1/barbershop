@@ -157,7 +157,7 @@ const BookingItem = ({ booking }: BookingItemProps) => {
             }
           </Badge>
 
-          <BookingInfo booking={booking} />
+          <BookingInfo booking={booking}/>
 
           <SheetFooter className="flex-row gap-3 mt-6">
             {/* <SheetClose asChild>

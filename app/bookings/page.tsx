@@ -4,18 +4,28 @@ import { redirect } from "next/navigation";
 import { db } from "../_lib/prisma";
 import BookingItem from "../_components/booking-item";
 import { authOptions } from "../_lib/auth";
+import { useEffect, useState } from "react";
 
 const BookingsPage = async () => {
-  const session = await getServerSession(authOptions);
+  // const session = await getServerSession(authOptions);
+  const [userId, setUserId] = useState<string | null>(null);
 
-  if (!session?.user) {
-    return redirect("/");
-  }
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const userIdParam = searchParams.get('userId');
+    if (userIdParam) {
+      setUserId(userIdParam);
+    }
+  }, []);
+
+  // if (!session?.user) {
+  //   return redirect("/");
+  // }
 
   const [confirmedBookings, finishedBookings, canceledBookings] = await Promise.all([
     db.booking.findMany({
       where: {
-        userId: (session.user as any).id,
+        userId: userId as string,
         // date: {
         //   gte: new Date(),
         // },
@@ -31,7 +41,7 @@ const BookingsPage = async () => {
     }),
     db.booking.findMany({
       where: {
-        userId: (session.user as any).id,
+        userId: userId as string,
         // date: {
         //   lt: new Date(),
         // },
@@ -47,7 +57,7 @@ const BookingsPage = async () => {
     }),
     db.booking.findMany({
       where: {
-        userId: (session.user as any).id,
+        userId: userId as string,
         status: 'CANCELED',
       },
       include: {
