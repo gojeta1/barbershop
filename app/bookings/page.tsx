@@ -26,7 +26,7 @@ const BookingsPage = async () => {
   const [confirmedBookings, finishedBookings, canceledBookings] = await Promise.all([
     db.booking.findMany({
       where: {
-        userId: userId as string,
+        userId: userId as string | undefined,
         // date: {
         //   gte: new Date(),
         // },
@@ -42,7 +42,7 @@ const BookingsPage = async () => {
     }),
     db.booking.findMany({
       where: {
-        userId: userId as string,
+        userId: userId as string | undefined,
         // date: {
         //   lt: new Date(),
         // },
@@ -58,7 +58,7 @@ const BookingsPage = async () => {
     }),
     db.booking.findMany({
       where: {
-        userId: userId as string,
+        userId: userId as string | undefined,
         status: 'CANCELED',
       },
       include: {
